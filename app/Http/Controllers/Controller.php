@@ -8,10 +8,19 @@ use Laravel\Lumen\Routing\Controller as BaseController;
 /**
  * @OA\OpenApi(
  *   @OA\Info(
- *     title="專案名稱",
+ *     title="LSGames Forum API",
  *     version="1.0.0",
- *     description="<專案名稱>的 API 文件"
+ *     description="LSGames Forum 的 API 文件"
  *   )
+ * )
+ * @OA\SecurityScheme(
+ *   type="http",
+ *   description="登入驗證",
+ *   name="Token based Based",
+ *   in="header",
+ *   scheme="bearer",
+ *   bearerFormat="JWT",
+ *   securityScheme="apiAuth",
  * )
  */
 class Controller extends BaseController
