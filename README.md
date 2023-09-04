@@ -17,6 +17,10 @@
 - MySQL 或 MariaDB
 - Nginx 或 Apache
 
+## 線上展示
+
+- [點此檢視 Swagger 展示](https://syskzworks.ddns.net/forwork/services/lsgamesforum/api/swagger)
+
 ## 本機除錯
 
 可以遵循以下步驟在本機進行除錯或檢視
