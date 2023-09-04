@@ -2,23 +2,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: <APPLICATION_NAME>
+  name: lsgames-forum-backend
   labels:
-    app: <APPLICATION_NAME>
-  namespace: <NAMESPACE>
+    app: lsgames-forum-backend
+  namespace: smkz-for-work
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: <APPLICATION_NAME>
+      app: lsgames-forum-backend
   template:
     metadata:
       labels:
-        app: <APPLICATION_NAME>
+        app: lsgames-forum-backend
     spec:
       containers:
-        - name: <APPLICATION_NAME>
-          image: <REGISTRY_URL>/<IMAGE_NAME>:latest
+        - name: lsgames-forum-backend
+          image: $secrets.REGISTRY_URL/lsgames-forum-backend:latest
           resources:
             requests:
               memory: 512Mi
@@ -29,18 +29,54 @@ spec:
           ports:
             - containerPort: 80
               protocol: TCP
+          env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: lsgames-forum-secrets
+                  key: database.host
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: lsgames-forum-configs
+                  key: database.port
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: lsgames-forum-configs
+                  key: database.name
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: lsgames-forum-secrets
+                  key: database.username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: lsgames-forum-secrets
+                  key: database.password
+            - name: REQUEST_CLIENT_VERIFY_SSL
+              valueFrom:
+                configMapKeyRef:
+                  name: lsgames-forum-configs
+                  key: request.verifyssl
+            - name: SINGLE_SIGN_ON_BACKEND
+              valueFrom:
+                configMapKeyRef:
+                  name: lsgames-forum-configs
+                  key: services.singlesignon
 
 ---
 # service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: <APPLICATION_NAME>
-  namespace: <NAMESPACE>
+  name: lsgames-forum-backend
+  namespace: smkz-for-work
 spec:
   type: ClusterIP
   selector:
-    app: <APPLICATION_NAME>
+    app: lsgames-forum-backend
   ports:
     - protocol: TCP
       port: 80
