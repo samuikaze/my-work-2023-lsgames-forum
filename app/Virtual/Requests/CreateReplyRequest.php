@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Virtual\Request;
+namespace App\Virtual\Requests;
 
 /**
  * 建立文章回應的請求格式

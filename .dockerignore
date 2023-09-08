@@ -4,5 +4,6 @@
 /.kubernetes
 /tests
 /vendor
+/.vscode
 composer.lock
 phpunit.xml
