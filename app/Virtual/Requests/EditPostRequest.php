@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Virtual\Request;
+namespace App\Virtual\Requests;
 
 /**
  * 編輯討論板文章的請求格式
