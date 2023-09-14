@@ -752,4 +752,165 @@ class ForumController extends Controller
 
         return $this->response();
     }
+
+    /**
+     * 刪除文章
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int|null $board_id 討論板 ID
+     * @param int|null $post_id 文章 ID
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @OA\Delete(
+     *   path="/api/v1/forums/boards/{board_id}/post/{post_id}",
+     *   summary="刪除文章",
+     *   tags={"Forum v1"},
+     *   security={{ "apiAuth": {} }},
+     *   @OA\Parameter(
+     *     name="board_id",
+     *     description="討論板 PK",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="integer")
+     *   ),
+     *   @OA\Parameter(
+     *     name="post_id",
+     *     description="文章 PK",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="integer")
+     *   ),
+     *   @OA\Response(
+     *     response="200",
+     *     description="成功刪除文章",
+     *     @OA\JsonContent(
+     *       allOf={
+     *         @OA\Schema(ref="#/components/schemas/BaseResponse"),
+     *         @OA\Schema(
+     *           @OA\Property(
+     *             property="data"
+     *           )
+     *         )
+     *       }
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response="400",
+     *     description="提供的資料不正確或刪除文章過程中發生錯誤",
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="系統發生無法預期的錯誤",
+     *   ),
+     * )
+     */
+    public function deletePost(Request $request, int $board_id = null, int $post_id = null)
+    {
+        if (is_null($board_id)) {
+            return $this->response('未知的討論板', null, self::HTTP_BAD_REQUEST);
+        }
+
+        if (is_null($post_id)) {
+            return $this->response('未知的文章', null, self::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $this->forum_service->deletePost(
+                $request->input('authorization.id'),
+                $board_id,
+                $post_id,
+            );
+        } catch (EntityNotFoundException | InvalidArgumentException $e) {
+            return $this->response($e->getMessage(), null, self::HTTP_BAD_REQUEST);
+        }
+
+        return $this->response();
+    }
+
+    /**
+     * 刪除回應
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int|null $board_id 討論板 ID
+     * @param int|null $post_id 文章 ID
+     * @param int|null $reply_id 回應 ID
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @OA\Delete(
+     *   path="/api/v1/forums/boards/{board_id}/post/{post_id}/reply/{reply_id}",
+     *   summary="刪除回應",
+     *   tags={"Forum v1"},
+     *   security={{ "apiAuth": {} }},
+     *   @OA\Parameter(
+     *     name="board_id",
+     *     description="討論板 PK",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="integer")
+     *   ),
+     *   @OA\Parameter(
+     *     name="post_id",
+     *     description="文章 PK",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="integer")
+     *   ),
+     *   @OA\Parameter(
+     *     name="reply_id",
+     *     description="回應 PK",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="integer")
+     *   ),
+     *   @OA\Response(
+     *     response="200",
+     *     description="成功刪除回應",
+     *     @OA\JsonContent(
+     *       allOf={
+     *         @OA\Schema(ref="#/components/schemas/BaseResponse"),
+     *         @OA\Schema(
+     *           @OA\Property(
+     *             property="data"
+     *           )
+     *         )
+     *       }
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response="400",
+     *     description="提供的資料不正確或刪除回應過程中發生錯誤",
+     *   ),
+     *   @OA\Response(
+     *     response="500",
+     *     description="系統發生無法預期的錯誤",
+     *   ),
+     * )
+     */
+    public function deleteReply(Request $request, int $board_id = null, int $post_id = null, int $reply_id = null)
+    {
+        if (is_null($board_id)) {
+            return $this->response('未知的討論板', null, self::HTTP_BAD_REQUEST);
+        }
+
+        if (is_null($post_id)) {
+            return $this->response('未知的文章', null, self::HTTP_BAD_REQUEST);
+        }
+
+        if (is_null($reply_id)) {
+            return $this->response('未知的回應', null, self::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $this->forum_service->deleteReply(
+                $request->input('authorization.id'),
+                $board_id,
+                $post_id,
+                $reply_id
+            );
+        } catch (EntityNotFoundException | InvalidArgumentException $e) {
+            return $this->response($e->getMessage(), null, self::HTTP_BAD_REQUEST);
+        }
+
+        return $this->response();
+    }
 }
