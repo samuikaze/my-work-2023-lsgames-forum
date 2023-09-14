@@ -220,6 +220,10 @@ class ForumService
     public function editPost(int $user_id, int $board_id, int $post_id, string $title, int $category, string $content): void
     {
         $post = $this->post_repository->find($post_id);
+        if (is_null($post)) {
+            throw new InvalidArgumentException('文章不存在');
+        }
+
         if ($post->board_id != $board_id) {
             throw new InvalidArgumentException('討論板 ID 不正確');
         }
@@ -252,11 +256,19 @@ class ForumService
     public function editReply(int $user_id, int $board_id, int $post_id, int $reply_id, string $content, ?string $title): void
     {
         $post = $this->post_repository->find($post_id);
+        if (is_null($post)) {
+            throw new InvalidArgumentException('文章不存在');
+        }
+
         if ($post->board_id != $board_id) {
             throw new InvalidArgumentException('討論板 ID 不正確');
         }
 
         $reply = $this->reply_repository->find($reply_id);
+        if (is_null($reply)) {
+            throw new InvalidArgumentException('回應不存在');
+        }
+
         if ($reply->post_id != $post_id) {
             throw new InvalidArgumentException('文章 ID 不正確');
         }
@@ -268,6 +280,78 @@ class ForumService
         $this->reply_repository->safeUpdate($reply_id, [
             'title' => $title,
             'content' => $content,
+        ]);
+    }
+
+    /**
+     * 刪除文章
+     *
+     * @param int $user_id 使用者帳號 PK
+     * @param int $board_id 討論板 PK
+     * @param int $post_id 文章 PK
+     * @return void
+     *
+     * @throws \App\Exceptions\EntityNotFoundException
+     * @throws \InvalidArgumentException
+     */
+    public function deletePost(int $user_id, int $board_id, int $post_id): void
+    {
+        $post = $this->post_repository->find($post_id);
+        if (is_null($post)) {
+            throw new InvalidArgumentException('文章不存在');
+        }
+
+        if ($post->board_id != $board_id) {
+            throw new InvalidArgumentException('討論板 ID 不正確');
+        }
+
+        if ($post->post_user_id != $user_id) {
+            throw new InvalidArgumentException('無權編輯此文章');
+        }
+
+        $this->post_repository->safeUpdate($post_id, [
+            'deleted_at' => Carbon::now(),
+        ]);
+    }
+
+    /**
+     * 刪除回應
+     *
+     * @param int $user_id 使用者帳號 PK
+     * @param int $board_id 討論板 PK
+     * @param int $post_id 文章 PK
+     * @param int $reply_id 回應 PK
+     * @return void
+     *
+     * @throws \App\Exceptions\EntityNotFoundException
+     * @throws \InvalidArgumentException
+     */
+    public function deleteReply(int $user_id, int $board_id, int $post_id, int $reply_id): void
+    {
+        $post = $this->post_repository->find($post_id);
+        if (is_null($post)) {
+            throw new InvalidArgumentException('文章不存在');
+        }
+
+        if ($post->board_id != $board_id) {
+            throw new InvalidArgumentException('討論板 ID 不正確');
+        }
+
+        $reply = $this->reply_repository->find($reply_id);
+        if (is_null($reply)) {
+            throw new InvalidArgumentException('回應不存在');
+        }
+
+        if ($reply->post_id != $post_id) {
+            throw new InvalidArgumentException('文章 ID 不正確');
+        }
+
+        if ($reply->post_user_id != $user_id) {
+            throw new InvalidArgumentException('無權編輯此文章');
+        }
+
+        $this->reply_repository->safeUpdate($reply_id, [
+            'deleted_at' => Carbon::now(),
         ]);
     }
 }

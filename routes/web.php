@@ -36,5 +36,9 @@ $router->group(['prefix' => 'api/v1'], function () use ($router) {
         $router->patch('/forums/boards/{board_id}/post/{post_id}', 'ForumController@editPost');
         // 編輯回應
         $router->patch('/forums/boards/{board_id}/post/{post_id}/reply/{reply_id}', 'ForumController@editReply');
+        // 刪除文章
+        $router->delete('/forums/boards/{board_id}/post/{post_id}', 'ForumController@deletePost');
+        // 刪除回應
+        $router->delete('/forums/boards/{board_id}/post/{post_id}/reply/{reply_id}', 'ForumController@deleteReply');
     });
 });
